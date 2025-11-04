@@ -1,62 +1,128 @@
-# Express.js RESTful API Assignment
+# Express.js RESTful API
 
-This assignment focuses on building a RESTful API using Express.js, implementing proper routing, middleware, and error handling.
+A RESTful API built with Express.js that implements CRUD operations for products, middleware, and error handling.
 
-## Assignment Overview
+## Setup
 
-You will:
-1. Set up an Express.js server
-2. Create RESTful API routes for a product resource
-3. Implement custom middleware for logging, authentication, and validation
-4. Add comprehensive error handling
-5. Develop advanced features like filtering, pagination, and search
-
-## Getting Started
-
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Install dependencies:
-   ```
+1. Install dependencies:
+   ```bash
    npm install
    ```
-4. Run the server:
+
+2. Create a `.env` file based on `.env.example` and set your API key:
    ```
-   npm start
+   API_KEY=your-secret-api-key-here
+   PORT=3000
    ```
 
-## Files Included
+3. Start the server:
+   ```bash
+   node server.js
+   ```
 
-- `Week2-Assignment.md`: Detailed assignment instructions
-- `server.js`: Starter Express.js server file
-- `.env.example`: Example environment variables file
-
-## Requirements
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Postman, Insomnia, or curl for API testing
+The server will run on port 3000 by default.
 
 ## API Endpoints
 
-The API will have the following endpoints:
+### Products
 
-- `GET /api/products`: Get all products
-- `GET /api/products/:id`: Get a specific product
-- `POST /api/products`: Create a new product
-- `PUT /api/products/:id`: Update a product
-- `DELETE /api/products/:id`: Delete a product
+#### GET /api/products
+List all products with optional filtering, pagination, and search.
 
-## Submission
+**Query Parameters:**
+- `category` (string): Filter by category
+- `search` (string): Search by product name
+- `page` (number): Page number for pagination (default: 1)
+- `limit` (number): Number of items per page (default: 10)
 
-Your work will be automatically submitted when you push to your GitHub Classroom repository. Make sure to:
+**Example:**
+```
+GET /api/products?category=lighting&page=1&limit=5
+GET /api/products?search=led
+```
 
-1. Complete all the required API endpoints
-2. Implement the middleware and error handling
-3. Document your API in the README.md
-4. Include examples of requests and responses
+#### GET /api/products/:id
+Get a specific product by ID.
 
-## Resources
+#### POST /api/products
+Create a new product. Requires authentication.
 
-- [Express.js Documentation](https://expressjs.com/)
-- [RESTful API Design Best Practices](https://restfulapi.net/)
-- [HTTP Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) 
+**Headers:**
+- `x-api-key`: Your API key
+
+**Body:**
+```json
+{
+  "name": "LED Bulb",
+  "description": "Energy-efficient LED bulb",
+  "price": 9.99,
+  "category": "Lighting",
+  "inStock": true
+}
+```
+
+#### PUT /api/products/:id
+Update an existing product. Requires authentication.
+
+**Headers:**
+- `x-api-key`: Your API key
+
+**Body:** (same as POST, all fields optional for partial updates)
+
+#### DELETE /api/products/:id
+Delete a product. Requires authentication.
+
+**Headers:**
+- `x-api-key`: Your API key
+
+#### GET /api/products/stats
+Get product statistics (total count and count by category).
+
+## Testing
+
+You can test the API using tools like Postman, Insomnia, or curl.
+
+### Example Requests
+
+1. Get all products:
+   ```bash
+   curl http://localhost:3000/api/products
+   ```
+
+2. Create a product:
+   ```bash
+   curl -X POST http://localhost:3000/api/products \
+     -H "Content-Type: application/json" \
+     -H "x-api-key: your-api-key" \
+     -d '{
+       "name": "Smart Switch",
+       "description": "WiFi-enabled smart switch",
+       "price": 29.99,
+       "category": "Electronics",
+       "inStock": true
+     }'
+   ```
+
+3. Get product statistics:
+   ```bash
+   curl http://localhost:3000/api/products/stats
+   ```
+
+## Error Handling
+
+The API uses custom error classes and global error handling middleware. Common HTTP status codes:
+- 200: Success
+- 201: Created
+- 204: No Content
+- 400: Bad Request (validation errors)
+- 401: Unauthorized (invalid API key)
+- 404: Not Found
+- 500: Internal Server Error
+
+## Middleware
+
+- **Logger**: Logs request method, URL, and timestamp
+- **Body Parser**: Parses JSON request bodies
+- **Authentication**: Checks for API key in headers
+- **Validation**: Validates product data for POST/PUT requests
+- **Error Handler**: Global error handling middleware
